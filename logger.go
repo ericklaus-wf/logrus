@@ -26,6 +26,11 @@ type Logger struct {
 	// to) `logrus.Info`, which allows Info(), Warn(), Error() and Fatal() to be
 	// logged. `logrus.Debug` is useful in
 	Level Level
+	// The function invoked by the Fatal() family of functions. The default is `os.Exit`.
+	// Keep in mind that invocation of any Fatal() function is expected to
+	// terminate execution. Replacing this with a function that does not terminate
+	// execution may lead to surprising results.
+	Exit func(int)
 	// Used to sync writing to the log.
 	mu sync.Mutex
 }
@@ -108,7 +113,7 @@ func (logger *Logger) Fatalf(format string, args ...interface{}) {
 	if logger.Level >= FatalLevel {
 		NewEntry(logger).Fatalf(format, args...)
 	}
-	Exit(1)
+	logger.handleExit(1)
 }
 
 func (logger *Logger) Panicf(format string, args ...interface{}) {
@@ -155,7 +160,7 @@ func (logger *Logger) Fatal(args ...interface{}) {
 	if logger.Level >= FatalLevel {
 		NewEntry(logger).Fatal(args...)
 	}
-	Exit(1)
+	logger.handleExit(1)
 }
 
 func (logger *Logger) Panic(args ...interface{}) {
@@ -202,7 +207,7 @@ func (logger *Logger) Fatalln(args ...interface{}) {
 	if logger.Level >= FatalLevel {
 		NewEntry(logger).Fatalln(args...)
 	}
-	Exit(1)
+	logger.handleExit(1)
 }
 
 func (logger *Logger) Panicln(args ...interface{}) {
