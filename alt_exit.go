@@ -45,7 +45,9 @@ func runHandlers() {
 	}
 }
 
-// Exit runs all the Logrus atexit handlers and then terminates the program using os.Exit(code)
+// Exit runs all the Logrus atexit handlers and then terminates the program using os.Exit(code).
+//
+// Deprecated: Use the Fatal family of functions on a Logger or Entry instead.
 func Exit(code int) {
 	runHandlers()
 	os.Exit(code)
@@ -61,9 +63,7 @@ func (logger *Logger) handleExit(code int) {
 	}
 }
 
-// RegisterExitHandler adds a Logrus Exit handler, call logrus.Exit to invoke
-// all handlers. The handlers will also be invoked when any Fatal log entry is
-// made.
+// RegisterExitHandler adds a Logrus Exit handler. Handlers are invoked when any Fatal log entry is made.
 //
 // This method is useful when a caller wishes to use logrus to log a fatal
 // message but also needs to gracefully shutdown. An example usecase could be
